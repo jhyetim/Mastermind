@@ -1,6 +1,6 @@
-# Assignment Five: Mastermind
+# Mastermind
 
-Mastermind is a code-breaking game [created in 1970 by Mordecai Meirowitz](https://en.wikipedia.org/wiki/Mastermind_(board_game)). For the final project you will recreate this game using the MSP430, a potentiometer, RGB LED, onboard button and 7-segment display.
+Mastermind is a code-breaking game created in 1970 by Mordecai Meirowitz. The game will be recreated using an MSP430, a potentiometer, RGB LED, onboard button and 7-segment display.
 
 ## Example Output
 
@@ -31,27 +31,17 @@ Mastermind is a code-breaking game [created in 1970 by Mordecai Meirowitz](https
 
 ## Wiring
 
-[Please see the wiring video.](https://youtu.be/HcnwtzK9YsY)
-
 To use the `P2.6 (XIN)` and `P2.7 (XOUT)` pins as regular GPIO (general purpose input/output), you must clear the bits from the first special function select memory location:
-
-```c
-P2SEL  &= ~(BIT6 | BIT7);
-```
-
-This line is provided in the template file for you.
 
 ## Design
 
-For the final assignment, it will be easier to use C instead of assembly, so that is what the template file is written in. Feel free to do it in assembly if you really want, though.
+### Obtaining Keyboard Input
 
-### Step 1: Obtaining Keyboard Input
+Initially the microcontroller should wait for input from the "mastermind" to choose the code to be broken (shown as a `>` prompt). The `MAX_LINE` defines how many character (minus one for the `\0` terminator!) should be allowed to be typed. Anything to be shown on the screen will be printed. Key presses are sent to the microcontroller, and the code will do something with it.
 
-Initially the microcontroller should wait for input from the "mastermind" to choose the code to be broken (shown as a `>` prompt). I have given you an "interface" to implement in the `input.c` file: the `prompt_for_line()` function. The `MAX_LINE` defines how many character (minus one for the `\0` terminator!) should be allowed to be typed. Remember that for anything to be shown on the screen you must actually print it. Key presses are sent to the microcontroller, but it's up to your code what to do something with them. A very simple example is given in this file initally.
+When the backspace key is pressed, the ASCII code `0x08` or `\b` is sent.
 
-When the backspace key is pressed, the ASCII code `0x08` or `\b` is sent. You can check for this character to know when to delete a character from the buffer and move backward.
-
-### Step 2: Playing the Game
+### Playing the Game
 
 ```
 ? CMYK  P L
@@ -62,22 +52,13 @@ When the backspace key is pressed, the ASCII code `0x08` or `\b` is sent. You ca
 * `P`: number of colors _that are in the correct position_
 * `L`: number of correct colors _but in the wrong position_
 
-Once the code is selected, the game then waits for the "player" to dial in the color with the potentiometer and enter that color by pressing the onboard button. I have provided a function that handles the potentiometer hardware settings for you called `initialize_dtc()` that is given in `dtc.c` and `dtc.h`. This is used in the template file and you won't need to mess with it. At any point in your program you can read from the variable `pot_value` to obtain a number between 0-1023 that indicates what position the potentiometer is at (512 is halfway or 50%, 256 is a quarter or 25%, etc.)
+Once the code is selected, the game then waits for the "player" to dial in the color with the potentiometer and enter that color by pressing the onboard button.
 
 When four colors have been entered for the code, the game will check it against the answer and output:
 
 1. correct colors in correct positions (black or colored pegs, `P` in the example output)
 1. correct colors, but in incorrect positions (white pegs, `L` in the example output)
 
-These need to be shown on the 7-segment display to the "player". `P` on the left and `L` on the right.
+It will be shown on the 7-segment display to the "player". `P` on the left and `L` on the right.
 
 If the "player" correctly guessed all 4 colors in the correct position then the game is won. If the "player" has tried to guess 10 times and still doesn't have the correct answer, then the game is lost.
-
-## Tips
-
-1. You will need _at least_ one timer interrupt and the button interrupt. The template file has both defined for you just in case.
-1. Tracking the state of the game is important, there are at least two states.
-1. Think carefully about how to properly calculate the clues. We may talk about strategies in class.
-
-### Good Luck!
-
