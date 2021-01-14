@@ -32,6 +32,9 @@ Mastermind is a code-breaking game created in 1970 by Mordecai Meirowitz. The ga
 ## Wiring
 
 To use the `P2.6 (XIN)` and `P2.7 (XOUT)` pins as regular GPIO (general purpose input/output), you must clear the bits from the first special function select memory location:
+```
+P2SEL  &= ~(BIT6 | BIT7);
+```
 
 ## Design
 
